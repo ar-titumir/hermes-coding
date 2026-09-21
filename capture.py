@@ -53,27 +53,22 @@ if not connected:
 # -----------------------------
 print(f"Connected. Capturing for {args.t} seconds...")
 
-start_time = time.time()
 image_count = 0
-next_capture = start_time
+last_capture = time.time() - 1
+INTERVAL = 1 # with 1 sec interval
 
-while time.time() - start_time < args.t:
-
-    if time.time() < next_capture:
-        time.sleep(0.01)
-        continue
+while image_count < args.t:
 
     ret, frame = cap.read()
 
-    if ret:
+    if ret and time.time()-last_capture > 1.0:
         image_count += 1
+        last_capture = time.time()
 
         filename = f"captures/image_{image_count:03d}.jpg"
         cv2.imwrite(filename, frame)
 
         print(f"Saved: {filename}")
-
-    next_capture += 1
 
 cap.release()
 
